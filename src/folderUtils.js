@@ -2,9 +2,9 @@
 
 const folderType = 'folder';
 
-// import * as $rdf from 'rdflib'; 
+// import * as $rdf from 'rdflib';
 
-// cjs-start 
+// cjs-start
     const $rdf = require('rdflib')
     exports.getStats = getStats;
     exports.folderType = folderType;
@@ -16,18 +16,22 @@ const folderType = 'folder';
 // cjs-end
 
 /*cjs*/ function getStats(graph,subjectName) {
-  const subjectNode = $rdf.sym(subjectName);
-  const mod = $rdf.sym('http://purl.org/dc/terms/modified');
-  const size = $rdf.sym('http://www.w3.org/ns/posix/stat#size');
-  const mtime = $rdf.sym('http://www.w3.org/ns/posix/stat#mtime');
-  let  modified = graph.any(subjectNode, mod, undefined);
-  if(typeof(modified)==="undefined") return false;
-  else modified = modified.value;
-  return {
-    modified: modified,
-    size: graph.any(subjectNode, size, undefined).value,
-    mtime: graph.any(subjectNode, mtime, undefined).value,
-  };
+  const subjectNodeSym = $rdf.sym(subjectName);
+  const modSym = $rdf.sym('http://purl.org/dc/terms/modified');
+  const sizeSym = $rdf.sym('http://www.w3.org/ns/posix/stat#size');
+  const mtimeSym = $rdf.sym('http://www.w3.org/ns/posix/stat#mtime');
+
+  const modified = graph.any(subjectNodeSym, modSym, undefined);
+  if (typeof(modified) === "undefined") return false;
+
+  const size = graph.any(subjectNodeSym, sizeSym, undefined);
+  const mtime = graph.any(subjectNodeSym, mtimeSym, undefined);
+
+  let result = {}
+  result.size = size ? size.value : undefined;
+  result.modified = modified ? modified.value : undefined;
+  result.mtime = mtime ? mtime.value : undefined;
+  return result;
 }
 
 /** A type used internally to indicate we are handling a folder */
@@ -174,5 +178,3 @@ const folderType = 'folder';
         }
     })
 }
-
-
